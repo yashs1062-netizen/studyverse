@@ -38,6 +38,12 @@ export async function POST(request:Request){const user=await getChatGPTUser();if
  const r=await db().prepare('INSERT INTO study_members (group_id,user_id,member_id,display_name,share_time,joined_at) SELECT ?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM study_members WHERE group_id=?)<100 ON CONFLICT(group_id,user_id) DO NOTHING').bind(group.id,user.userId,crypto.randomUUID(),b.displayName.trim(),b.sharing?1:0,now,group.id).run();if(!r.meta.changes)return json({error:'This group is full. Groups support 100 members.'},409);return json({groupId:group.id},201)}
  if(!str(b.groupId,100))return json({error:'Choose a group.'},400);
  const group=await db().prepare('SELECT * FROM study_groups WHERE id=?').bind(b.groupId).first<any>(),mine=await db().prepare('SELECT member_id FROM study_members WHERE group_id=? AND user_id=?').bind(b.groupId,user.userId).first<any>();if(!group||!mine)return json({error:'You are not a member of this group.'},403);
+ if(b.action==='videoRoom'){
+ const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('studyverse-video-v1:'+group.id+':'+group.invite_code));
+ const roomName='Studyverse'+Array.from(new Uint8Array(bytes),v=>v.toString(16).padStart(2,'0')).join('');
+ const member=await db().prepare('SELECT display_name FROM study_members WHERE group_id=? AND user_id=?').bind(b.groupId,user.userId).first<any>();
+ return json({roomName,displayName:member?.display_name||'Study friend',groupName:group.name});
+ }
  if(b.action==='settings'){if(!str(b.displayName,60)||typeof b.sharing!=='boolean')return json({error:'Choose a nickname and sharing preference.'},400);await db().prepare('UPDATE study_members SET display_name=?,share_time=?,focusing=CASE WHEN ?=0 THEN 0 ELSE focusing END WHERE group_id=? AND user_id=?').bind(b.displayName.trim(),b.sharing?1:0,b.sharing?1:0,b.groupId,user.userId).run();return json({ok:true})}
  if(b.action==='leave'){if(group.owner_id===user.userId)return json({error:'As owner, delete the group instead of leaving it.'},400);await db().prepare('DELETE FROM study_members WHERE group_id=? AND user_id=?').bind(b.groupId,user.userId).run();return json({ok:true})}
  if(group.owner_id!==user.userId)return json({error:'Only the group owner can do that.'},403);
