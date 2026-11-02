@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const chapters=[{n:'Income tax: basic concepts',d:[1,0,0]},{n:'GST: Input credit',d:[0,0,0]},{n:'Custom topic',d:[0,0,0]},{n:'Renamed tax topic',taxSection:'indirect',d:[1,1,1]}];
+const rows=chapters.map(()=>({hidden:false}));
+const fields={chapterSearch:{value:''},chapterFilter:{value:'all'},taxSectionFilter:{value:'direct'},emptySearch:{hidden:true}};
+const ctx={st:{cur:0,subs:[{ch:chapters}]},$:id=>fields[id],document:{querySelectorAll:()=>rows}};
+vm.createContext(ctx);
+const syllabus=fs.readFileSync('ui/views/syllabus.js','utf8');
+vm.runInContext(syllabus.slice(0,syllabus.indexOf('function taxSectionSelector')),ctx);
+const themes=fs.readFileSync('ui/views/themes.js','utf8');
+vm.runInContext(themes.slice(themes.indexOf('function filterChapters()'),themes.indexOf("document.addEventListener('input'")),ctx);
+ctx.filterChapters();assert.deepEqual(rows.map(x=>x.hidden),[false,true,true,true]);
+fields.taxSectionFilter.value='indirect';ctx.filterChapters();assert.deepEqual(rows.map(x=>x.hidden),[true,false,true,false]);
+fields.chapterFilter.value='complete';ctx.filterChapters();assert.deepEqual(rows.map(x=>x.hidden),[true,true,true,false]);
+fields.chapterSearch.value='missing';ctx.filterChapters();assert.equal(fields.emptySearch.hidden,false);
+assert.equal(chapters[3].d[2],1);
+console.log('Tax sections: direct/indirect, custom labels, combined filters and unchanged progress passed.');

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studyverse — Your CA study adventure</title>
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" sizes="180x180">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#7256a8">
+<meta name="apple-mobile-web-app-title" content="Studyverse">
+
+
+<style>/*__STUDYVERSE_STYLES__*/</style>
+</head>
+<body>
+<div id="wipe" aria-hidden="true">Setting sail…<span>⛵</span></div>
+<header class="hero">
+  <div class="sun"></div><i class="cloud c1"></i><i class="cloud c2"></i><i class="cloud c3"></i>
+  <div class="ttl"><div class="overline">YOUR OWN LITTLE STUDY UNIVERSE</div><h1 id="appTitle">Studyverse</h1><p id="tagline">A new chapter starts with you.</p></div>
+  <div class="rankbox"><b id="rk"></b><span id="pp"></span></div>
+  <div class="sea"></div><div class="w w1"></div>
+  <div id="ship"><svg viewBox="0 0 120 110" aria-hidden="true">
+    <g class="flag"><path d="M61 6L88 13 61 21Z" fill="#c1272d" stroke="#38230f" stroke-width="1.5"/></g>
+    <rect x="59" y="6" width="3" height="72" fill="#5a3a1a"/>
+    <path d="M26 24Q60 36 94 24L90 64Q60 74 30 64Z" fill="#fff7e0" stroke="#38230f" stroke-width="2"/>
+    <circle cx="60" cy="47" r="8" fill="#fff" stroke="#38230f" stroke-width="1.5"/><circle cx="57" cy="46" r="1.8" fill="#38230f"/><circle cx="63" cy="46" r="1.8" fill="#38230f"/>
+    <path d="M50 58L70 66M70 58L50 66" stroke="#38230f" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M51 41Q60 28 69 41Z" fill="#f4c542" stroke="#38230f" stroke-width="1.5"/><ellipse cx="60" cy="41" rx="13" ry="3" fill="#f4c542" stroke="#38230f" stroke-width="1.5"/><path d="M52 40H68" stroke="#c1272d" stroke-width="2"/>
+    <path d="M12 78H108L98 101Q60 109 22 101Z" fill="#9b5a25" stroke="#38230f" stroke-width="2"/>
+    <path d="M18 88H102" stroke="#38230f" stroke-width="1.5" opacity=".5"/><circle cx="16" cy="82" r="6" fill="#f4c542" stroke="#38230f" stroke-width="1.5"/>
+  </svg></div>
+  <div class="w w2"></div>
+</header>
+<div class="appbar"><a class="brand" href="#" aria-label="Studyverse home"><svg class="brand-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="17" fill="var(--ink)"/><path d="M15 24C22 21 27 23 32 27C37 23 42 21 49 24V45C42 43 37 45 32 49C27 45 22 43 15 45Z" fill="none" stroke="var(--paper)" stroke-width="3.3" stroke-linejoin="round"/><path d="M32 28V48" stroke="var(--paper)" stroke-width="3" stroke-linecap="round"/><path d="M40 9L42.8 15.2L49 18L42.8 20.8L40 27L37.2 20.8L31 18L37.2 15.2Z" fill="var(--sky1)"/></svg><span>studyverse</span></a><span class="localbadge">☁ Connecting to your account…</span><button class="ghost" onclick="openStudio()">✧ Customize</button></div><nav class="nav" id="sectionNavigation" aria-label="Main navigation"><div class="navHeading"><svg class="brand-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="17" fill="var(--ink)"/><path d="M15 24C22 21 27 23 32 27C37 23 42 21 49 24V45C42 43 37 45 32 49C27 45 22 43 15 45Z" fill="none" stroke="var(--paper)" stroke-width="3.3" stroke-linejoin="round"/><path d="M32 28V48" stroke="var(--paper)" stroke-width="3" stroke-linecap="round"/><path d="M40 9L42.8 15.2L49 18L42.8 20.8L40 27L37.2 20.8L31 18L37.2 15.2Z" fill="var(--sky1)"/></svg><span>studyverse</span></div><div class="navCaption">YOUR STUDY SPACE</div>
+  <button class="tab" data-a="tab" data-v="v"><span class="navIcon" aria-hidden="true"></span><span>Dashboard</span></button>
+  <button class="tab" data-a="tab" data-v="f"><span class="navIcon" aria-hidden="true"></span><span>Study timer</span></button>
+  <button class="tab" data-a="tab" data-v="g"><span class="navIcon" aria-hidden="true"></span><span>Study groups</span></button>
+  <button class="tab" data-a="tab" data-v="s"><span class="navIcon" aria-hidden="true"></span><span>Syllabus</span></button>
+  <button class="tab" data-a="tab" data-v="c"><span class="navIcon" aria-hidden="true"></span><span>Calendar</span></button>
+  <button class="tab" data-a="tab" data-v="t"><span class="navIcon" aria-hidden="true"></span><span>Tests & goals</span></button>
+  <button class="tab" data-a="tab" data-v="a"><span class="navIcon" aria-hidden="true"></span><span>Theme studio</span></button></nav><div class="utility"><span id="targetLabel"></span><button class="ghost" id="undoButton" onclick="undoChange()" disabled>↶ Undo</button><button class="ghost" onclick="backup()">↓ Backup</button><label class="ghost importLabel">↑ Restore<input type="file" id="restore" accept=".json,application/json" hidden></label></div>
+<div class="cloudBanner" id="syncError" hidden><span id="syncErrorText"></span> <button class="ghost" onclick="pushCloud()">Retry saving</button></div><main class="wrap" id="page"></main><div class="syncGate" id="syncGate"><section class="syncPanel"><div class="overline">YOUR ACCOUNT · YOUR STUDYVERSE</div><h2>Bringing your journey with you.</h2><p id="syncMessage">Loading your saved tracker…</p><button class="go" id="syncRetry" onclick="bootCloud()">Retry connection</button><div id="cloudChoices" hidden><button class="ghost" onclick="backup()">Download this device’s backup</button><button class="go" onclick="resolveCloud(false)">Load saved cloud version</button><button class="ghost" onclick="resolveCloud(true)">Replace cloud with this device’s version</button></div><p class="hint" id="syncDetails">Connecting securely…</p></section></div><div id="toast" role="status" aria-live="polite"></div><footer>Studyverse · Built around your journey.<br>Your tracker saves to your ChatGPT account and syncs across devices. Wait for “All changes saved” before closing. Keep a backup too. Chapter lists are editable planning templates, not an official syllabus.</footer>
+<script>/*__STUDYVERSE_SCRIPT__*/</script>
+</body>
+</html>

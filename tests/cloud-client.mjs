@@ -1,0 +1,14 @@
+import {readTrackerHtml} from './tracker-source.mjs';
+import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+const nodes=new Map(),store=new Map();const node=id=>nodes.get(id)||nodes.set(id,{textContent:'',hidden:false,style:{setProperty(){}},classList:{add(){},remove(){}},value:'',disabled:false}).get(id);
+let remote=null,revision=0,offline=false,forceConflict=false;
+const ctx={console,Date,Math,JSON,String,Number,Array,Blob,URL,AbortSignal,navigator:{onLine:true},location:{reload(){}},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)},document:{getElementById:node,querySelector:s=>s==='.localbadge'?node('badge'):null,querySelectorAll:()=>[],documentElement:{style:{setProperty(){}}},body:{dataset:{}},addEventListener(){},visibilityState:'visible'},window:{addEventListener(){}},setTimeout(){return 1},clearTimeout(){},setInterval(){return 1},clearInterval(){},fetch:async(url,options={})=>{if(offline)throw Error('offline');if(options.method==='PUT'){const body=JSON.parse(options.body);if(forceConflict||body.revision!==revision)return Response.json({error:'conflict'},{status:409});remote=body.state;revision++;return Response.json({revision})}return Response.json({userId:'test-account',state:remote,revision})}};
+vm.createContext(ctx);const source=readTrackerHtml().match(/<script>([\s\S]*)<\/script>/)[1].replace("init();st.tab='v';render(true);bootCloud();",'');vm.runInContext(source,ctx);vm.runInContext('render=function(){};init()',ctx);
+await vm.runInContext('bootCloud()',ctx);assert.equal(revision,1);assert.equal(remote.subs.length,3);assert.equal(node('syncGate').hidden,true);
+vm.runInContext("st.subs[0].ch[0].d[0]=1;save()",ctx);await vm.runInContext('pushCloud()',ctx);assert.equal(remote.subs[0].ch[0].d[0],1);assert.equal(vm.runInContext('cloudDirty',ctx),false);
+offline=true;vm.runInContext("st.name='Offline edit';save()",ctx);await vm.runInContext('pushCloud()',ctx);assert.equal(vm.runInContext('cloudDirty',ctx),true);assert.equal(JSON.parse(store.get('grand-line-v2:account:test-account')).pending,true);
+offline=false;forceConflict=true;await vm.runInContext('pushCloud()',ctx);assert.equal(vm.runInContext('syncBlocked',ctx),true);assert.equal(node('syncGate').hidden,false);
+forceConflict=false;remote.name='Other device';revision++;await vm.runInContext('resolveCloud(false)',ctx);assert.equal(vm.runInContext('st.name',ctx),'Other device');assert.equal(vm.runInContext('cloudDirty',ctx),false);
+remote.name='Latest account state';revision++;await vm.runInContext('refreshCloud()',ctx);assert.equal(vm.runInContext('st.name',ctx),'Latest account state');
+await vm.runInContext('bootCloud()',ctx);assert.equal(vm.runInContext('st.name',ctx),'Latest account state');assert.equal(revision,4);
+console.log('PASS: first-device migration, autosave, offline pending cache, conflict gate, cloud-version choice, cross-device refresh, reopening loads cloud.');

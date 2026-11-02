@@ -1,0 +1,2 @@
+import fs from 'node:fs';
+export function readTrackerHtml(){return fs.readFileSync('tracker.html','utf8').replace('/*__STUDYVERSE_STYLES__*/',()=>["ui/styles/base.css", "ui/styles/today.css"].map(p=>fs.readFileSync(p,'utf8')).join('\n')).replace('/*__STUDYVERSE_SCRIPT__*/',()=>["ui/core.js", "ui/views/dashboard.js", "ui/views/syllabus.js", "ui/events.js", "ui/cloud-sync.js", "ui/views/themes.js", "ui/views/timer.js", "ui/views/groups.js", "ui/views/calendar.js", "ui/views/shared-room.js", "ui/bootstrap.js"].map(p=>fs.readFileSync(p,'utf8')).join('\n'))}
